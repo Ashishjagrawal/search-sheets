@@ -23,8 +23,8 @@ A full-stack Node.js application that provides AI-powered semantic search capabi
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd semantic-spreadsheet-search
+   git clone https://github.com/Ashishjagrawal/search-sheets.git
+   cd search-sheets
    ```
 
 2. **Install dependencies**
@@ -310,7 +310,7 @@ Set `NODE_ENV=development` for detailed logging.
 
 ### Technical Documentation
 - **[Design Document](docs/design.md)** - Complete technical architecture and design decisions
-- **[API Reference](docs/api.md)** - Detailed API endpoint documentation
+- **[API Reference](docs/api-reference.md)** - Detailed API endpoint documentation
 
 ### Architecture Overview
 The system uses a modular Node.js architecture with:

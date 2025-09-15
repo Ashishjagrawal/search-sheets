@@ -26,10 +26,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Run tests
-      run: npm test
-
-    - name: Generate coverage report
+    - name: Run tests with coverage
       run: npm test -- --coverage
 
     - name: Check if application starts
@@ -63,6 +60,6 @@ jobs:
           -e OPENAI_API_KEY=test-key \
           semantic-spreadsheet-search
         sleep 10
-        curl -f http://localhost:3000/api/health || exit 1
+        curl -f http://localhost:3000/api/status || exit 1
         docker stop test-container
         docker rm test-container
