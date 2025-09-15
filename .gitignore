@@ -115,3 +115,10 @@ demo-script.md
 # Backup files
 *.bak
 *.backup
+
+# Docker images and large files
+*.tar.gz
+*.tar
+*.zip
+*.dmg
+*.pkg
