@@ -242,9 +242,20 @@ semantic-spreadsheet-search/
 
 ## 🧪 Testing
 
+### Test Coverage
+- **Total Tests**: 57 tests (100% passing)
+- **Code Coverage**: 45.82% overall
+- **Test Framework**: Vitest with v8 coverage provider
+- **Coverage Report**: [docs/test-coverage-report.md](docs/test-coverage-report.md)
+
 ### Unit Tests
 ```bash
 npm test
+```
+
+### Tests with Coverage
+```bash
+npm test -- --coverage
 ```
 
 ### Integration Tests
@@ -311,6 +322,7 @@ Set `NODE_ENV=development` for detailed logging.
 ### Technical Documentation
 - **[Design Document](docs/design.md)** - Complete technical architecture and design decisions
 - **[API Reference](docs/api-reference.md)** - Detailed API endpoint documentation
+- **[Test Coverage Report](docs/test-coverage-report.md)** - Comprehensive test coverage analysis
 
 ### Architecture Overview
 The system uses a modular Node.js architecture with:

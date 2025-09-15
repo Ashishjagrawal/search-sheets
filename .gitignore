@@ -105,6 +105,7 @@ build/
 # Test files
 test-results/
 coverage/
+coverage-report.json
 
 # Delivery and planning documents
 DELIVERY_CHECKLIST.md
