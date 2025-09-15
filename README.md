@@ -83,7 +83,7 @@ npm install
 cp env.example .env
 
 # Edit .env and add your OpenAI API key
-# OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 
 # Start the application
 npm start
