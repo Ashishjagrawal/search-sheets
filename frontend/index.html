@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Spreadsheet Search</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔍 Semantic Spreadsheet Search</h1>
+            <p>AI-powered search across your Excel files with natural language queries</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Load Files Section -->
+            <section class="load-section">
+                <h2>📊 Load Excel Files</h2>
+                <div class="load-controls">
+                    <button id="loadDefaultBtn" class="btn btn-primary">Load Default Files</button>
+                    <button id="loadCustomBtn" class="btn btn-secondary">Upload Custom Files</button>
+                </div>
+                
+                <div id="customLoadForm" class="custom-load-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="fileInput">Select Excel files (.xlsx, .xls):</label>
+                        <input type="file" id="fileInput" multiple accept=".xlsx,.xls" class="file-input">
+                    </div>
+                    <button id="loadCustomFilesBtn" class="btn btn-primary">Upload and Process Files</button>
+                </div>
+
+                <div id="loadStatus" class="status-message"></div>
+            </section>
+
+            <!-- Search Section -->
+            <section class="search-section">
+                <h2>🔍 Search</h2>
+                <div class="search-controls">
+                    <div class="search-input-group">
+                        <input type="text" id="searchQuery" placeholder="Find all profitability metrics..." class="search-input">
+                        <button id="searchBtn" class="btn btn-primary">Search</button>
+                    </div>
+                    
+                    <div class="search-options">
+                        <label class="radio-group">
+                            <input type="radio" name="searchMode" value="semantic" checked>
+                            <span>Semantic</span>
+                        </label>
+                        <label class="radio-group">
+                            <input type="radio" name="searchMode" value="keyword">
+                            <span>Keyword</span>
+                        </label>
+                        <label class="radio-group">
+                            <input type="radio" name="searchMode" value="both">
+                            <span>Compare Both</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="searchStatus" class="status-message"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section">
+                <h2>📋 Results</h2>
+                <div id="resultsContainer" class="results-container">
+                    <div class="empty-state">
+                        <p>Enter a search query to find relevant spreadsheet data</p>
+                        <div class="example-queries">
+                            <h3>Try these example queries:</h3>
+                            <ul>
+                                <li>Find all profitability metrics</li>
+                                <li>Show cost-related formulas</li>
+                                <li>Where are my margin analyses?</li>
+                                <li>What percentage calculations do I have?</li>
+                                <li>Find lookup formulas</li>
+                                <li>Budget vs actual comparisons</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Status -->
+            <section class="status-section">
+                <h2>⚙️ System Status</h2>
+                <div id="systemStatus" class="status-info">
+                    <div class="status-item">
+                        <span class="status-label">Search Index:</span>
+                        <span id="indexSize" class="status-value">0 documents</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cache:</span>
+                        <span id="cacheStatus" class="status-value">Ready</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Embeddings:</span>
+                        <span id="embeddingStatus" class="status-value">Ready</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

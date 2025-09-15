@@ -1,0 +1,44 @@
+{
+  "name": "semantic-spreadsheet-search",
+  "version": "1.0.0",
+  "description": "Semantic Search for Spreadsheets - Full-stack Node.js app with AI-powered search capabilities",
+  "type": "module",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "evaluate": "node scripts/evaluate.js",
+    "ingest": "node scripts/ingest-local.js"
+  },
+  "keywords": [
+    "spreadsheet",
+    "semantic-search",
+    "ai",
+    "excel",
+    "embeddings",
+    "search"
+  ],
+  "author": "Superjoin Assignment",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "hot-formula-parser": "^3.0.0",
+    "multer": "^2.0.0-rc.4",
+    "node-cache": "^5.1.2",
+    "openai": "^4.20.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
