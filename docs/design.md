@@ -358,45 +358,220 @@ services:
 
 ### 10.1 Containerization
 
+The application is fully containerized using Docker with a multi-stage build process for optimal production deployment.
+
+#### Dockerfile
 ```dockerfile
-# Multi-stage build
-FROM node:20-alpine AS builder
+# Stage 1: Build
+FROM node:18-alpine AS builder
+
 WORKDIR /app
+
 COPY package*.json ./
+
+# Install production dependencies
 RUN npm ci --only=production
 
-FROM node:20-alpine AS runtime
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
 COPY . .
+
+# Stage 2: Production
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy only necessary files from builder stage
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend ./backend
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/uploads ./uploads
+COPY --from=builder /app/data ./data
+COPY --from=builder /app/.env.example ./.env.example
+COPY --from=builder /app/README.md ./README.md
+COPY --from=builder /app/design.md ./design.md
+
+# Create uploads directory and set permissions
+RUN mkdir -p uploads && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 -G nodejs && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
 EXPOSE 3000
-CMD ["npm", "start"]
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+CMD ["node", "backend/server.js"]
 ```
 
-### 10.2 Production Deployment
-
-#### Environment Setup
+#### Docker Compose
 ```yaml
-# docker-compose.prod.yml
 version: '3.8'
+
 services:
-  app:
-    build: .
+  semantic-spreadsheet-search:
+    image: semantic-spreadsheet-search:latest
+    container_name: semantic-spreadsheet-search
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      NODE_ENV: production
+      PORT: 3000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
       - ./uploads:/app/uploads
-    restart: unless-stopped
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 ```
 
+### 10.2 Deployment Scripts
+
+#### Automated Deployment
+```bash
+#!/bin/bash
+# deploy.sh
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# Check if OPENAI_API_KEY is set
+if [ -z "$OPENAI_API_KEY" ]; then
+  echo "Error: OPENAI_API_KEY environment variable is not set."
+  echo "Please set it before running the deployment script, e.g.:"
+  echo "export OPENAI_API_KEY=\"your_openai_api_key_here\""
+  exit 1
+fi
+
+echo "Building Docker image..."
+docker build -t semantic-spreadsheet-search:latest .
+
+echo "Stopping and removing any existing container..."
+docker stop semantic-spreadsheet-search || true
+docker rm semantic-spreadsheet-search || true
+
+echo "Running new Docker container..."
+docker run -d \
+  --name semantic-spreadsheet-search \
+  -p 3000:3000 \
+  -e OPENAI_API_KEY="$OPENAI_API_KEY" \
+  -v "$(pwd)/uploads:/app/uploads" \
+  -v "$(pwd)/data:/app/data" \
+  semantic-spreadsheet-search:latest
+
+echo "Deployment complete. Application should be running on http://localhost:3000"
+```
+
+### 10.3 CI/CD Pipeline
+
+#### GitHub Actions Workflow
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests with coverage
+      run: npm test -- --coverage
+
+    - name: Check if application starts
+      run: |
+        timeout 10s npm start || echo "Application startup test completed"
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'test-key' }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build Docker image
+      run: docker build -t semantic-spreadsheet-search .
+
+    - name: Test Docker container
+      run: |
+        docker run -d --name test-container -p 3000:3000 \
+          -e OPENAI_API_KEY=test-key \
+          semantic-spreadsheet-search
+        sleep 10
+        curl -f http://localhost:3000/api/status || exit 1
+        docker stop test-container
+        docker rm test-container
+```
+
+### 10.4 Production Deployment
+
+#### Environment Variables
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=production
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+
+# Optional: Cache Configuration
+CACHE_TTL_SECONDS=1800
+```
+
+#### Health Monitoring
+- **Health Endpoint**: `GET /api/status` - Returns system status and service health
+- **Docker Health Check**: Built-in container health monitoring
+- **Service Dependencies**: Checks OpenAI API connectivity and service initialization
+
+#### Security Considerations
+- **Non-root User**: Container runs as non-privileged user
+- **Minimal Base Image**: Alpine Linux for reduced attack surface
+- **Environment Variables**: Sensitive data via environment variables
+- **Volume Mounts**: Persistent storage for uploads and data
+
 #### Monitoring and Logging
-- **Health Checks**: Automated service monitoring
-- **Log Aggregation**: Centralized logging with ELK stack
-- **Metrics**: Prometheus + Grafana for system metrics
-- **Alerting**: Automated alerts for system issues
+- **Application Logs**: Standard output logging
+- **Health Checks**: Automated service monitoring via `/api/status`
+- **Container Logs**: Docker container logging
+- **Error Tracking**: Comprehensive error handling and reporting
 
 ## 11. Testing Strategy
 

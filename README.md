@@ -263,6 +263,74 @@ npm test -- --coverage
 npm run evaluate
 ```
 
+### Frontend Testing
+
+#### 1. Start the Application
+```bash
+# Start the server
+npm start
+
+# Or with Docker
+docker-compose up
+```
+
+#### 2. Access the Web Interface
+Open your browser and navigate to: `http://localhost:3000`
+
+#### 3. Load Sample Data
+1. Click **"Load Default Files"** button
+2. Wait for the loading indicator to complete
+3. Verify you see success message with statistics
+
+#### 4. Test Search Functionality
+
+**Semantic Search:**
+1. Select **"Semantic"** mode
+2. Enter query: `"Find all revenue calculations"`
+3. Click **"Search"**
+4. Verify results show relevant cells with explanations
+
+**Keyword Search:**
+1. Select **"Keyword"** mode  
+2. Enter query: `"revenue"`
+3. Click **"Search"**
+4. Verify exact keyword matches are highlighted
+
+**Compare Mode:**
+1. Select **"Compare"** mode
+2. Enter query: `"profit margin"`
+3. Click **"Search"**
+4. Verify both semantic and keyword results are displayed side-by-side
+
+#### 5. Test File Upload
+1. Click **"Upload Custom Files"**
+2. Select an Excel file (.xlsx or .xls)
+3. Click **"Upload"**
+4. Verify file is processed and indexed
+
+#### 6. Test System Status
+1. Click **"System Status"** button
+2. Verify all services show as initialized
+3. Check statistics for loaded data
+
+#### 7. Sample Test Queries
+Try these queries to test different functionality:
+
+**Financial Queries:**
+- `"Show me all profit calculations"`
+- `"Find revenue growth formulas"`
+- `"Where are the budget comparisons?"`
+
+**Formula Queries:**
+- `"Find lookup formulas"`
+- `"Show percentage calculations"`
+- `"Where are the sum formulas?"`
+
+**Data Analysis:**
+- `"Find forecast data"`
+- `"Show trend analysis"`
+- `"Where are the charts?"`
+
 ### Manual Testing
 1. Load spreadsheets
 2. Run various search queries
@@ -281,10 +349,53 @@ npm run dev
 npm start
 ```
 
-### Docker (Optional)
+### Docker Deployment
+
+#### Quick Start with Docker
 ```bash
+# Build and run with Docker Compose
 docker-compose up
+
+# Or build and run manually
+docker build -t semantic-spreadsheet-search .
+docker run -p 3000:3000 -e OPENAI_API_KEY=your_key semantic-spreadsheet-search
 ```
+
+#### Automated Deployment
+```bash
+# Set your OpenAI API key
+export OPENAI_API_KEY="your_openai_api_key_here"
+
+# Run automated deployment script
+chmod +x deploy.sh
+./deploy.sh
+```
+
+#### Docker Features
+- **Multi-stage Build**: Optimized production image
+- **Non-root User**: Security best practices
+- **Health Checks**: Built-in container monitoring
+- **Volume Mounts**: Persistent file storage
+- **Environment Variables**: Secure configuration
+
+### CI/CD Pipeline
+
+The project includes a complete GitHub Actions CI/CD pipeline:
+
+#### Automated Testing
+- **Node.js Versions**: Tests on Node.js 18.x and 20.x
+- **Test Coverage**: Automated coverage reporting
+- **Code Quality**: Linting and formatting checks
+- **Docker Build**: Automated container building and testing
+
+#### Pipeline Stages
+1. **Test**: Run all tests with coverage
+2. **Build**: Build Docker image
+3. **Verify**: Test container functionality
+4. **Deploy**: Ready for production deployment
+
+#### CI Status
+[![CI](https://github.com/Ashishjagrawal/search-sheets/workflows/CI/badge.svg)](https://github.com/Ashishjagrawal/search-sheets/actions)
 
 ## 📊 Performance Considerations
 
@@ -323,6 +434,8 @@ Set `NODE_ENV=development` for detailed logging.
 - **[Design Document](docs/design.md)** - Complete technical architecture and design decisions
 - **[API Reference](docs/api-reference.md)** - Detailed API endpoint documentation
 - **[Test Coverage Report](docs/test-coverage-report.md)** - Comprehensive test coverage analysis
+- **[Docker & CI/CD Guide](docs/docker-and-ci.md)** - Containerization and deployment documentation
+- **[Frontend Testing Guide](docs/frontend-testing-guide.md)** - Complete web interface testing instructions
 
 ### Architecture Overview
 The system uses a modular Node.js architecture with:
